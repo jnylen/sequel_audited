@@ -240,14 +240,15 @@ module Sequel
 
         # extract audited values only
         def audited_json(event)
-          case event
+          vals = case event
           when 'create'
-            self.values.to_json
+            self.values
           when 'update'
-            (column_changes.empty? ? previous_changes : column_changes).to_json
+            (column_changes.empty? ? previous_changes : column_changes)
           when 'destroy'
-            self.to_json
+            self.values
           end
+          vals.except(*model.audited_default_ignored_columns).to_json
         end
 
         def add_audited(event)
