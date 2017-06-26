@@ -266,7 +266,7 @@ module Sequel
         def add_audited(event)
           changed = audited_values(event)
           ref     = send(model.audited_reference_method) if model.audited_reference_method
-          unless changed.nil?
+          unless changed.blank?
             add_version(
               model_type: model,
               model_pk:   pk,
