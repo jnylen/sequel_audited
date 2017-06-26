@@ -3,6 +3,7 @@ class AuditLog < Sequel::Model
   # handle versioning of audited records
   plugin :list, field: :version, scope: [:model_type, :model_pk]
   plugin :timestamps
+  plugin :serialization, :json, :changed
 
   # TODO: see if we should add these
   # many_to_one :associated, polymorphic: true
@@ -240,20 +241,20 @@ module Sequel
         private
 
         # extract audited values only
-        def audited_json(event)
+        def audited_values(event)
           vals = case event
-          when 'create'
+          when Sequel::Audited::CREATE
             self.values
-          when 'update'
+          when Sequel::Audited::UPDATE
             (column_changes.empty? ? previous_changes : column_changes)
-          when 'destroy'
+          when Sequel::Audited::DESTROY
             self.values
           end
-          vals.except(*model.audited_default_ignored_columns).to_json
+          vals.except(*model.audited_default_ignored_columns)
         end
 
         def add_audited(event)
-          changed = audited_json(event)
+          changed = audited_values(event)
           unless changed.nil?
             add_version(
               model_type: model,
