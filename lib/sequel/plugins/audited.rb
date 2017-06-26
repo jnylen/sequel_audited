@@ -253,12 +253,15 @@ module Sequel
         end
 
         def add_audited(event)
-          add_version(
-            model_type: model,
-            model_pk:   pk,
-            event:      event,
-            changed:    audited_json(event)
-          )
+          changed = audited_json(event)
+          unless changed.nil?
+            add_version(
+              model_type: model,
+              model_pk:   pk,
+              event:      event,
+              changed:    changed
+            )
+          end
         end
 
         ### CALLBACKS ###
