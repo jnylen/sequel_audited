@@ -80,6 +80,8 @@ module Sequel
           # specifically for the audited model on a per model basis
           set_user_method(opts)
 
+          set_reference_method(opts)
+
           only    = opts.fetch(:only, [])
           except  = opts.fetch(:except, [])
 
@@ -124,12 +126,15 @@ module Sequel
         # The holder of columns that should be audited
         attr_reader :audited_included_columns
 
+        attr_accessor :audited_reference_method
+
 
         Plugins.inherited_instance_variables(self,
                                              :@audited_default_ignored_columns => nil,
                                              :@audited_current_user_method     => nil,
                                              :@audited_included_columns        => nil,
-                                             :@audited_ignored_columns         => nil
+                                             :@audited_ignored_columns         => nil,
+                                             :@audited_reference_method        => nil
                                             )
 
         def non_audited_columns
@@ -203,6 +208,12 @@ module Sequel
           end
         end
 
+        def set_reference_method(opts)
+          if opts[:reference_method]
+            @audited_reference_method = opts[:reference_method]
+          end
+        end
+
       end
 
 
@@ -237,7 +248,6 @@ module Sequel
         end
         alias_method :last_audited_on, :last_audited_at
 
-
         private
 
         # extract audited values only
@@ -255,10 +265,12 @@ module Sequel
 
         def add_audited(event)
           changed = audited_values(event)
+          ref     = send(model.audited_reference_method) if model.audited_reference_method
           unless changed.nil?
             add_version(
               model_type: model,
               model_pk:   pk,
+              model_ref:  ref,
               event:      event,
               changed:    changed
             )
@@ -269,17 +281,17 @@ module Sequel
 
         def after_create
           super
-          add_audited('create')
+          add_audited(Sequel::Audited::CREATE)
         end
 
         def after_update
           super
-          add_audited('update')
+          add_audited(Sequel::Audited::UPDATE)
         end
 
         def after_destroy
           super
-          add_audited('destroy')
+          add_audited(Sequel::Audited::DESTROY)
         end
       end
     end

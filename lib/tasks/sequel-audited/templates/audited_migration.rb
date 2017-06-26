@@ -6,6 +6,7 @@ Sequel.migration do
       primary_key :id
       String    :model_type
       Integer   :model_pk
+      String    :model_ref
       String    :event
       String    :changed,     text: true
       Integer   :version,     default: 0
