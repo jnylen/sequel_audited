@@ -569,7 +569,7 @@ expected to adhere to the [Contributor Covenant](http://contributor-covenant.org
 
 ## License
 
-&copy; Copyright Kematzy, 2015
+&copy; Copyright Kematzy, 2015<br>
 &copy; Copyright jnylen, 2017
 
 Heavily inspired by:
