@@ -12,6 +12,9 @@ Sequel.migration do
       Integer   :modifier_id
       String    :modifier_type
       DateTime  :created_at
+
+      index [:associated_type, :associated_id]
+      index [:modifier_type, :modifier_id]
     end
   end
 end
