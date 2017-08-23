@@ -8,9 +8,9 @@ Sequel.migration do
       Integer   :associated_id
       String    :event
       String    :changed,     text: true
-      Integer   :version,     default: 0
+      Integer   :version
       Integer   :modifier_id
-      String    :modifier_type,   default: 'User'
+      String    :modifier_type
       DateTime  :created_at
     end
   end
