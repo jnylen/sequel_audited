@@ -63,14 +63,14 @@ which should output something like this:
 
 ```bash
 ....
-rake audited:add_migration      # Installs Sequel::Audited migration, but does not run it.
+rake audited:migrate:install      # Installs Sequel::Audited migration, but does not run it.
 ....
 ```
 
 Run the sequel_audit rake task:
 
 ```bash
-bundle exec rake audited:add_migration
+bundle exec rake audited:migrate:install
 ```
 After this you can comment out the rake task in your Rakefile until you need to update. And then  
 finally run db:migrate to update your DB.
