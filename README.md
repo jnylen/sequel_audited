@@ -227,7 +227,7 @@ cat.update(name: 'Ruby Sequel')
 #<AuditLog @values={
   :id => 2,
   :associated_type => "Category",
-  :associated_pk => 1,
+  :associated_id => 1,
   :event => "update",
   # NOTE! only the changes are stored
   :changed => "{\"name\":[\"Sequel\",\"Ruby Sequel\"],\"updated_at\":\"<timestamp>\"}",
@@ -251,7 +251,7 @@ cat.delete
 #<AuditLog @values={
   :id => 3,
   :associated_type => "Category",
-  :associated_pk => 1,
+  :associated_id => 1,
   :event => "destroy",
   # NOTE! all values at exit time are stored
   :changed => "{\"id\":1,\"name\":\"Ruby Sequel\",\"created_at\":\"<timestamp>\",\"updated_at\":\"<timestamp>\"}",
@@ -396,7 +396,7 @@ Post.audited_versions?
 # grab all audits for a particular model. Returns an array.
 Post.audited_versions
   #=> [
-        { id: 1, associated_type: 'Post', associated_pk: '11', version: 1,
+        { id: 1, associated_type: 'Post', associated_id: '11', version: 1,
           changed: "{JSON SERIALIZED OBJECT}", modifier_id: 88,
           username: "joeblogs", created_at: TIMESTAMP
         },
@@ -405,7 +405,7 @@ Post.audited_versions
 
 
 # filtered by primary_key value
-Posts.audited_versions(associated_pk: 123)
+Posts.audited_versions(associated_id: 123)
 
 # filtered by user :id value
 Posts.audited_versions(modifier_id: 88)
@@ -555,7 +555,7 @@ a git tag for the version, push git commits and tags, and push the `.gem` file t
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/kematzy/sequel_audited.
+Bug reports and pull requests are welcome on GitHub at https://github.com/jnylen/sequel_audited.
 
 Please run `bundle exec rake coverage` and `bundle exec rake rubocop` on your code before you
 send a pull-request.
@@ -568,6 +568,7 @@ expected to adhere to the [Contributor Covenant](http://contributor-covenant.org
 ## License
 
 &copy; Copyright Kematzy, 2015
+&copy; Copyright jnylen, 2017
 
 Heavily inspired by:
 
