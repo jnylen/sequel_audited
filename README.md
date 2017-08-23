@@ -292,6 +292,8 @@ Sequel::Audited.audited_current_user_method = :audited_user
 ```
 
 **Note!** the name of the function must be given as a symbol.
+**Note!!** it will first try to hit the method on the model (i.e. Post) itself first. Then it will hit the global method.<br>
+So if you want to customize the modifier per model you can do that here.
 
 <br>
 
