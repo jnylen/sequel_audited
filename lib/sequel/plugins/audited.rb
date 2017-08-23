@@ -1,21 +1,21 @@
-#
 class AuditLog < Sequel::Model
   # handle versioning of audited records
-  plugin :list, field: :version, scope: [:model_type, :model_pk]
+  plugin :list, field: :version, scope: [:associated_type, :associated_id]
   plugin :timestamps
   plugin :serialization, :json, :changed
+  plugin :polymorphic
 
   # TODO: see if we should add these
-  # many_to_one :associated, polymorphic: true
-  # many_to_one :user,       polymorphic: true
+  many_to_one :associated, polymorphic: true
+  many_to_one :modifier,   polymorphic: true
 
   def before_validation
     # grab the current user
     if u = audit_user
-      self.user_id    = u.id
-      self.username   = u.username
-      self.user_type  = u.class.name ||= :User
+      self.modifier = u
     end
+
+    super
   end
 
   # private
@@ -25,13 +25,11 @@ class AuditLog < Sequel::Model
   #
   # # NOTE! this allows overriding the default value on a per audited model
   def audit_user
-    m = Kernel.const_get(model_type)
-    send(m.audited_current_user_method)
+    m = Kernel.const_get(associated_type)
+    m.send(m.audited_current_user_method) || send(m.audited_current_user_method)
   end
 
 end
-
-
 
 module Sequel
   module Plugins
@@ -73,6 +71,7 @@ module Sequel
           # add support for :dirty attributes tracking & JSON serializing of data
           plugin(:dirty)
           plugin(:json_serializer)
+          plugin(:polymorphic)
 
           # set the default ignored columns or revert to defaults
           set_default_ignored_columns(opts)
@@ -108,8 +107,7 @@ module Sequel
           one_to_many(
             :versions,
             class: audit_model_name,
-            key: :model_pk,
-            conditions: { model_type: model.name.to_s }
+            as: 'associated'
           )
 
         end
@@ -159,7 +157,7 @@ module Sequel
         #   Post.audited_versions?   #=> true / false
         #
         def audited_versions?
-          audit_model.where(model_type: name.to_s).count >= 1
+          audit_model.where(associated_type: name.to_s).count >= 1
         end
 
         # grab all audits for a particular model based upon filters
@@ -177,7 +175,7 @@ module Sequel
         #     #=> filtered to older than last seven (7) days
         #
         def audited_versions(opts = {})
-          audit_model.where(opts.merge(model_type: name.to_s)).order(:version).all
+          audit_model.where(opts.merge(associated_type: name.to_s)).order(:version).all
         end
 
 
@@ -230,7 +228,7 @@ module Sequel
         #
         def blame
           v = versions.last unless versions.empty?
-          v ? v.username : 'not audited'
+          v ? v.modifier : 'not audited'
         end
         alias_method :last_audited_by, :blame
 
@@ -265,12 +263,8 @@ module Sequel
 
         def add_audited(event)
           changed = audited_values(event)
-          ref     = send(model.audited_reference_method) if model.audited_reference_method
           unless changed.blank?
             add_version(
-              model_type: model,
-              model_pk:   pk,
-              model_ref:  ref,
               event:      event,
               changed:    changed
             )
