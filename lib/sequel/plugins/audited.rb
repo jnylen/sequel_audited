@@ -1,3 +1,5 @@
+require_relative '../audited'
+
 class AuditLog < Sequel::Model
   # handle versioning of audited records
   plugin :list, field: :version, scope: [:associated_type, :associated_id]
