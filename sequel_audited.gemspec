@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'sequel', '~> 4.2'
+  spec.add_runtime_dependency 'sequel', '>=4.0.0', '<6'
   spec.add_runtime_dependency 'sequel_polymorphic', '~> 0.3.1'
 
 
