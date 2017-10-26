@@ -20,8 +20,13 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'sequel', '>=4.0.0', '<6'
-  spec.add_runtime_dependency 'sequel_polymorphic', '~> 0.3.1'
+  spec.add_runtime_dependency 'sequel_polymorphic', '>= 0.3.1'
 
-
+  spec.add_development_dependency 'minitest', '~> 5.8'
+  spec.add_development_dependency 'minitest-hooks', '~> 1.2'
+  spec.add_development_dependency 'sqlite3', '~> 1.3'
+  spec.add_development_dependency 'simplecov', '~> 0.10'
+  spec.add_development_dependency 'rake', '~> 11.3'
+  spec.add_development_dependency 'dotenv'
 
 end
