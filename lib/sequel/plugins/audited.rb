@@ -16,6 +16,11 @@ class AuditLog < Sequel::Model
     if u = audit_user
       self.modifier = u
     end
+	
+	# grab any additional info if any
+	if i = additional_info
+      self.additional_info = i
+    end
 
     super
   end
@@ -29,6 +34,11 @@ class AuditLog < Sequel::Model
   def audit_user
     m = Kernel.const_get(associated_type)
     m.send(m.audited_current_user_method) || send(m.audited_current_user_method)
+  end
+  
+  def additional_info
+    m = Kernel.const_get(associated_type)
+    m.send(m.audited_additional_info_method) || send(m.audited_additional_info_method)
   end
 
 end
@@ -80,6 +90,7 @@ module Sequel
           # sets the name of the current User method or revert to default: :current_user
           # specifically for the audited model on a per model basis
           set_user_method(opts)
+          set_additional_info_method(opts)
 
           set_reference_method(opts)
 
@@ -120,7 +131,7 @@ module Sequel
       #
       module ClassMethods
 
-        attr_accessor :audited_default_ignored_columns, :audited_current_user_method
+        attr_accessor :audited_default_ignored_columns, :audited_current_user_method, :audited_additional_info_method
         # The holder of ignored columns
         attr_reader :audited_ignored_columns
         # The holder of columns that should be audited
@@ -132,6 +143,7 @@ module Sequel
         Plugins.inherited_instance_variables(self,
                                              :@audited_default_ignored_columns => nil,
                                              :@audited_current_user_method     => nil,
+                                             :@audited_additional_info_method  => nil,
                                              :@audited_included_columns        => nil,
                                              :@audited_ignored_columns         => nil,
                                              :@audited_reference_method        => nil
@@ -205,6 +217,14 @@ module Sequel
             @audited_current_user_method = opts[:user_method]
           else
             @audited_current_user_method = ::Sequel::Audited.audited_current_user_method
+          end
+        end
+
+        def set_additional_info_method(opts)
+          if opts[:additional_info]
+            @audited_additional_info_method = opts[:additional_info]
+          else
+            @audited_additional_info_method = ::Sequel::Audited.audited_additional_info_method
           end
         end
 

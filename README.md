@@ -204,6 +204,7 @@ Category.create(name: 'Sequel')
   :version => 1,
   :modifier_id => 88,
   :modifier_type => "User",
+  :additional_info => "",
   :created_at => <timestamp>
 }>
 ```
@@ -234,6 +235,7 @@ cat.update(name: 'Ruby Sequel')
   :version => 2,
   :modifier_id => 88,
   :modifier_type => "User",
+  :additional_info => "",
   :created_at => <timestamp>
 }>
 ```
@@ -258,6 +260,7 @@ cat.delete
   :version => 3,
   :modifier_id => 88,
   :modifier_type => "User",
+  :additional_info => "",
   :created_at => <timestamp>
 }>
 ```
@@ -294,6 +297,22 @@ Sequel::Audited.audited_current_user_method = :audited_user
 **Note!** the name of the function must be given as a symbol.
 **Note!!** it will first try to hit the method on the model (i.e. Post) itself first. Then it will hit the global method.<br>
 So if you want to customize the modifier per model you can do that here.
+
+<br>
+
+#### `Sequel::Audited.audited_additional_info_method`
+
+Sets the name of the global method that provides the additional info object (Hash).
+Default is: `:additional_info`.
+
+You can easily change the name of this method by calling:
+
+```ruby
+Sequel::Audited.audited_additional_info_method = :additional_info
+```
+
+**Note!** the name of the function must be given as a symbol.
+**Note!!** method should return a **Hash** value.
 
 <br>
 
@@ -353,8 +372,13 @@ def current_client
   @current_client ||= Client[session[:client_id]]
 end
 
+# if you have a global method for info like
+def additional_info
+  @additional_info ||= { ip: request.ip, user_agent: env['HTTP_USER_AGENT'] }
+end
+
 # and set
-ClientProfile.plugin(:audited, :user_method => :current_client)
+ClientProfile.plugin(:audited, :user_method => :current_client, :additional_info => :additional_info)
 
 # then the user info will be taken from DB[:clients].
  #<Client @values={:id=>99,:username=>"happyclient"... }>
