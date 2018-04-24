@@ -4,7 +4,6 @@ class AuditLog < Sequel::Model
   # handle versioning of audited records
   plugin :list, field: :version, scope: [:associated_type, :associated_id]
   plugin :timestamps
-  plugin :serialization, :json, :changed
   plugin :polymorphic
 
   # TODO: see if we should add these
