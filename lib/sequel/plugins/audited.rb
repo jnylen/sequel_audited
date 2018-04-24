@@ -17,7 +17,7 @@ class AuditLog < Sequel::Model
     end
 	
 	# grab any additional info if any
-	if i = additional_info
+	if i = audit_additional_info
       self.additional_info = i
     end
 
@@ -35,7 +35,7 @@ class AuditLog < Sequel::Model
     m.send(m.audited_current_user_method) || send(m.audited_current_user_method)
   end
   
-  def additional_info
+  def audit_additional_info
     m = Kernel.const_get(associated_type)
     m.send(m.audited_additional_info_method) || send(m.audited_additional_info_method)
   end
