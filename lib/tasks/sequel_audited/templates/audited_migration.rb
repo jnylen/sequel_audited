@@ -11,6 +11,7 @@ Sequel.migration do
       Integer   :version
       Integer   :modifier_id
       String    :modifier_type
+      String	:additional_info,     text: true
       DateTime  :created_at
 
       index [:associated_type, :associated_id]
