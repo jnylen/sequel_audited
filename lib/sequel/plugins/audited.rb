@@ -16,11 +16,16 @@ class AuditLog < Sequel::Model
       self.modifier = u
     end
 	
+	# Check warden for User if audited user is blank...	
+	if audit_user.blank? && Sequel::Audited::Railtie.env.key?('warden') && Sequel::Audited::Railtie.env["warden"].authenticated?
+       self.modifier = Sequel::Audited::Railtie.env["warden"].user
+	end
+	
 	# grab any additional info if any
 	if i = audit_additional_info
       self.additional_info = i
     end
-
+	
     super
   end
 

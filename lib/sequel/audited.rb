@@ -1,5 +1,6 @@
 require 'sequel'
 require 'sequel/audited/version'
+require 'sequel/audited/railtie'
 
 module Sequel
 
