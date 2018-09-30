@@ -1,4 +1,5 @@
 require_relative '../audited'
+require 'sequel/plugins/polymorphic'
 
 class AuditLog < Sequel::Model
   # handle versioning of audited records
